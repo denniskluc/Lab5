@@ -15,13 +15,13 @@ const genBtn = form.querySelectorAll('button')[0];
 
 const voiceSelection = document.getElementById('voice-selection');
 let voices = [];
-const volumeGroup = document.getElementById('volume-group');
-const voiceSelection = document.getElementById('voice-selection');
-const volumeSlider = volumeGroup.querySelectorAll('input')[0];
+const volumeIcon = document.querySelector('#volume-group').children[0];
+const volumeSlider = document.querySelector("[type='range']");
+const synth = window.speechSynthesis;
 
 
-const top = document.getElementById('text-top').value;
-const bottom = document.getElementById('text-bottom').value;
+const top = document.getElementById('text-top');
+const bottom = document.getElementById('text-bottom');
 
 newImg.addEventListener('change', changeImg);
 function changeImg() {
@@ -47,7 +47,8 @@ img.addEventListener('load', () => {
 });
 
 form.addEventListener('submit', generateText);
-function generateText() {
+function generateText(e) {
+  e.preventDefault();
 
   ctx.fillStyle = 'white';
   ctx.textAlign = 'center';
@@ -61,11 +62,8 @@ function generateText() {
   readBtn.disabled = false;
 
   voiceSelection.disabled = false;
-  top.disabled = true;
-  bottom.disabled = true;
 
   populateVoiceList();
-  e.preventDefault();
 }
 
 function populateVoiceList() {
@@ -81,14 +79,14 @@ function populateVoiceList() {
 
     option.setAttribute('data-lang', voices[i].lang);
     option.setAttribute('data-name', voices[i].name);
-    voiceSelect.appendChild(option);
+    voiceSelection.appendChild(option);
   }
 }
 
 readBtn.addEventListener('click', () =>  {
   let topAudio = new SpeechSynthesisUtterance(top.value);
   let bottomAudio = new SpeechSynthesisUtterance(bottom.value);
-  let selection = voiceSelect.selectedOptions[0].getAttribute('data-name');
+  let selection = voiceSelection.selectedOptions[0].getAttribute('data-name');
 
   for (let i = 0; i < voices.length; i++) {
     if (voices[i].name === selection) {
@@ -105,7 +103,9 @@ readBtn.addEventListener('click', () =>  {
 
 clearBtn.addEventListener('click', () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  form.reset();
+  
+  top.value = '';
+  bottom.value = '';
 
   clearBtn.disabled = true;
   readBtn.disabled = true;
